@@ -2,10 +2,9 @@
 // Não filtra por nota — mostrar só avaliações boas e esconder as ruins
 // seria enganoso, então tudo que os clientes mandarem aparece.
 
-const { getStore } = require("@netlify/blobs");
-
 exports.handler = async function () {
   try {
+    const { getStore } = await import("@netlify/blobs");
     const store = getStore("reviews");
     const reviews = (await store.get("all", { type: "json" })) || [];
     return {
