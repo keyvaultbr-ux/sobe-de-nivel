@@ -136,6 +136,24 @@
   .carousel-dots button{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);border:none;padding:0;cursor:pointer;}
   .carousel-dots button.active{background:#FFFFFF;}
 
+  .video-heading{text-align:center;margin:36px 0 18px;}
+  .video-heading p{font-family:'Chakra Petch',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin:0 0 8px;}
+  .video-heading svg{display:block;margin:0 auto;}
+  .video-carousel{display:flex;align-items:center;gap:14px;max-width:560px;margin:0 auto;}
+  .video-carousel-viewport{flex:1;overflow:hidden;border-radius:14px;border:1px solid var(--line);background:#000;}
+  .video-carousel-track{display:flex;transition:transform .5s ease;}
+  .video-slide{flex:0 0 100%;display:flex;align-items:center;justify-content:center;min-height:280px;}
+  .video-slide video{width:100%;max-height:560px;display:block;}
+  .vcar-arrow{
+    width:40px;height:40px;border-radius:50%;flex:none;
+    background:var(--panel-alt);border:1px solid var(--line);color:var(--text);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .vcar-arrow:hover{border-color:var(--amber);}
+  #videoDots{position:static;margin-top:16px;}
+  #videoDots button{background:var(--line);}
+  #videoDots button.active{background:var(--amber);}
+
   .why-buy{
     max-width:640px;margin:0 auto 32px;text-align:center;
     background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 26px;
@@ -402,6 +420,27 @@
         </div>
         <div class="carousel-dots" id="carouselDots"></div>
       </div>
+
+      <div class="video-heading">
+        <p>Assista o vídeo sobre o curso</p>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 4v15M12 19l-6-6M12 19l6-6" stroke="#2F6BFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+
+      <div class="video-carousel">
+        <button class="vcar-arrow" onclick="videoPrev()" aria-label="Vídeo anterior">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="video-carousel-viewport">
+          <div class="video-carousel-track" id="videoTrack">
+            <div class="video-slide"><video controls playsinline preload="metadata" src="imagens/video-1.mp4"></video></div>
+            <div class="video-slide"><video controls playsinline preload="metadata" src="imagens/video-2.mp4"></video></div>
+          </div>
+        </div>
+        <button class="vcar-arrow" onclick="videoNext()" aria-label="Próximo vídeo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="carousel-dots" id="videoDots"></div>
     </div>
   </section>
 
@@ -744,6 +783,33 @@
     setInterval(()=>{
       goTo((current+1) % slides);
     }, 10000);
+  })();
+
+  // ---------- carrossel de vídeos (setas pra escolher) ----------
+  (function initVideoCarousel(){
+    const track = document.getElementById('videoTrack');
+    const dotsBox = document.getElementById('videoDots');
+    if(!track) return;
+    const videos = Array.from(track.querySelectorAll('video'));
+    const slides = videos.length;
+    let current = 0;
+
+    for(let i=0;i<slides;i++){
+      const dot = document.createElement('button');
+      if(i===0) dot.classList.add('active');
+      dot.addEventListener('click', ()=>goToVideo(i));
+      dotsBox.appendChild(dot);
+    }
+
+    function goToVideo(i){
+      current = (i + slides) % slides;
+      track.style.transform = `translateX(-${current*100}%)`;
+      dotsBox.querySelectorAll('button').forEach((d,idx)=>d.classList.toggle('active', idx===current));
+      videos.forEach((v,idx)=>{ if(idx!==current) v.pause(); });
+    }
+
+    window.videoPrev = ()=>goToVideo(current-1);
+    window.videoNext = ()=>goToVideo(current+1);
   })();
 </script>
 
