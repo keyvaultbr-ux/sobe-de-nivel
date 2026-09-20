@@ -2,8 +2,6 @@
 // Usa Netlify Blobs (armazenamento chave-valor incluso no Netlify, sem
 // precisar de banco de dados externo).
 
-const { getStore } = require("@netlify/blobs");
-
 const MAX_COMMENT_LENGTH = 400;
 const MAX_NAME_LENGTH = 60;
 const MAX_REVIEWS_STORED = 200;
@@ -29,6 +27,7 @@ exports.handler = async function (event) {
   if (!name) name = "Cliente KeyVault";
 
   try {
+    const { getStore } = await import("@netlify/blobs");
     const store = getStore("reviews");
     const existingRaw = await store.get("all", { type: "json" });
     const reviews = Array.isArray(existingRaw) ? existingRaw : [];
